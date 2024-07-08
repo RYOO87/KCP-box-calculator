@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KCP 박스 계산기</title>
+    <style>
+        :root {
+            --background-color: #fffbf0;
+            --text-color: #333333;
+            --container-bg: #ffffff;
+            --input-border: #e6c300;
+            --button-bg: #ffd700;
+            --button-hover: #e6c300;
+            --button-text: #333333;
+            --copy-button-bg: #4CAF50;
+            --copy-button-hover: #45a049;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(230, 195, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 32px;
+            font-size: 28px;
+        }
+
+        .box-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            display: block;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        input[type="number"] {
+            padding: 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            flex: 1;
+            min-width: 80px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 14px 28px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+        }
+
+        #result {
+            margin-top: 28px;
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff9e6;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid var(--input-border);
+        }
+
+        #copyButton {
+            background-color: var(--copy-button-bg);
+            color: white;
+            margin-top: 16px;
+        }
+
+        #copyButton:hover {
+            background-color: var(--copy-button-hover);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            input[type="number"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KCP 박스 계산기</h1>
+        <form id="calculator-form">
+            <div class="box-group">
+                <label for="pallet04">04호:</label>
+                <div class="input-group">
+                    <input type="number" id="pallet04" placeholder="파레트 수" min="0">
+                    <input type="number" id="row04" placeholder="줄 수" min="0">
+                    <input type="number" id="individual04" placeholder="낱개 수" min="0">
+                </div>
+            </div>
+            <div class="box-group">
+                <label for="pallet11">11호:</label>
+                <div class="input-group">
+                    <input type="number" id="pallet11" placeholder="파레트 수" min="0">
+                    <input type="number" id="row11" placeholder="줄 수" min="0">
+                    <input type="number" id="individual11" placeholder="낱개 수" min="0">
+                </div>
+            </div>
+            <div class="box-group">
+                <label for="pallet12">12호:</label>
+                <div class="input-group">
+                    <input type="number" id="pallet12" placeholder="파레트 수" min="0">
+                    <input type="number" id="row12" placeholder="줄 수" min="0">
+                    <input type="number" id="individual12" placeholder="낱개 수" min="0">
+                </div>
+            </div>
+            <div class="box-group">
+                <label for="pallet13">13호:</label>
+                <div class="input-group">
+                    <input type="number" id="pallet13" placeholder="파레트 수" min="0">
+                    <input type="number" id="row13" placeholder="줄 수" min="0">
+                    <input type="number" id="individual13" placeholder="낱개 수" min="0">
+                </div>
+            </div>
+            <div class="box-group">
+                <label for="row15">15호:</label>
+                <div class="input-group">
+                    <input type="number" id="row15" placeholder="줄 수" min="0">
+                    <input type="number" id="individual15" placeholder="낱개 수" min="0">
+                </div>
+            </div>
+            <button type="button" onclick="calculateTotal()">계산하기</button>
+        </form>
+        <div id="result">
+            <!-- Result will be displayed here -->
+        </div>
+        <button id="copyButton" onclick="copyResult()" style="display: none;">결과 복사하기</button>
+    </div>
+    <script>
+        function calculateTotal() {
+            const palletCounts = {
+                "04": 90,
+                "11": 264,
+                "12": 132,
+                "13": 66
+            };
+            const rowCounts = {
+                "04": 180,
+                "11": 528,
+                "12": 264,
+                "13": 132,
+                "15": 66
+            };
+
+            const totals = {};
+            for (const [key, palletCount] of Object.entries(palletCounts)) {
+                const pallet = parseInt(document.getElementById(`pallet${key}`).value) || 0;
+                const row = parseInt(document.getElementById(`row${key}`).value) || 0;
+                const individual = parseInt(document.getElementById(`individual${key}`).value) || 0;
+
+                totals[key] = (pallet * palletCount) + (row * rowCounts[key]) + individual;
+            }
+
+            // Separate calculation for 15호 which does not have pallet
+            const row15 = parseInt(document.getElementById("row15").value) || 0;
+            const individual15 = parseInt(document.getElementById("individual15").value) || 0;
+            totals["15"] = (row15 * rowCounts["15"]) + individual15;
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = Object.entries(totals)
+                .filter(([_, value]) => value > 0)
+                .map(([key, value]) => `${key}호: ${value} 개`)
+                .join('<br>');
+
+            // Show the copy button after calculation
+            document.getElementById("copyButton").style.display = "block";
+        }
+
+        function copyResult() {
+            const resultText = document.getElementById("result").innerText;
+            const now = new Date();
+            const dateString = now.toLocaleDateString('ko-KR', { year: '2-digit', month: '2-digit', day: '2-digit' })
+                                  .replace(/\. /g, '/').replace('.', '');
+            const fullText = `${dateString}\n\n${resultText}`;
+            
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = fullText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert("결과가 클립보드에 복사되었습니다.");
+            } catch (err) {
+                console.error('복사 실패: ', err);
+                alert("복사에 실패했습니다. 수동으로 복사해주세요.");
+            } finally {
+                document.body.removeChild(tempTextArea);
+            }
+        }
+    </script>
+</body>
+</html>
